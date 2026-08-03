@@ -5,50 +5,31 @@ import {
   FaCalendarAlt,
 } from "react-icons/fa";
 
-
-const experiences = [
-  {
-    title: "Research Assistant",
-    company:
-      "International Centre for Climate Change and Development (ICCCAD)",
-    date: "Jun 2025 - Present",
-    description:
-      "Working on Loss & Damage project, climate vulnerability assessment, GIS mapping, geospatial analysis, stakeholder engagement and research reporting.",
-  },
-  {
-    title: "Young Fellow",
-    company: "Oxfam in Bangladesh",
-    date: "Mar 2024 - Mar 2025",
-    description:
-      "Conducted research on flood vulnerability, LVI, NWRM of Dharla River and GIS-based flood risk mapping in Kurigram.",
-  },
-  {
-    title: "Intern",
-    company:
-      "International Centre for Climate Change and Development (ICCCAD)",
-    date: "Jul 2023 - Dec 2023",
-    description:
-      "Worked on climate resilience projects, hazard mapping, CCVA, LCAP and stakeholder workshops.",
-  },
-  {
-    title: "Research Officer",
-    company: "Nirmol Bangladesh",
-    date: "Nov 2022 - Jan 2023",
-    description:
-      "Worked on ocean literacy, mangrove ecosystem, blue economy and community-based adaptation projects.",
-  },
-  {
-    title: "Research Assistant",
-    company: "Bangladesh Maritime University",
-    date: "Mar 2021 - Jan 2022",
-    description:
-      "Research on marine plastic pollution, biofouling, laboratory analysis and environmental monitoring.",
-  },
-];
-
+import useExperience from "../../hooks/useExperience";
 
 
 const Experience = () => {
+
+
+  const { experiences, loading } = useExperience();
+
+
+
+  if (loading) {
+
+    return (
+      <section className="py-20 text-center">
+        <h2 className="text-2xl font-semibold">
+          Loading Experience...
+        </h2>
+      </section>
+    );
+
+  }
+
+
+
+
 
 return (
 
@@ -74,6 +55,8 @@ sm:px-6
 lg:px-8
 "
 >
+
+
 
 
 
@@ -154,6 +137,8 @@ Professional Journey
 
 
 
+
+
 {/* Timeline */}
 
 <div
@@ -163,7 +148,7 @@ relative
 >
 
 
-{/* Desktop line */}
+{/* Desktop Line */}
 
 <div
 className="
@@ -185,7 +170,9 @@ rounded-full
 
 
 
-{/* Mobile line */}
+
+
+{/* Mobile Line */}
 
 <div
 className="
@@ -206,6 +193,8 @@ rounded-full
 
 
 
+
+
 <div
 className="
 space-y-12
@@ -221,7 +210,7 @@ experiences.map((item,index)=>(
 
 <motion.div
 
-key={index}
+key={item._id}
 
 
 initial={{
@@ -249,9 +238,11 @@ amount:.2
 
 
 className={`
+
 relative
 flex
 items-center
+
 
 ${
 index%2===0
@@ -268,7 +259,11 @@ index%2===0
 
 
 
-{/* Desktop icon */}
+
+
+
+
+{/* Desktop Icon */}
 
 <div
 className="
@@ -293,6 +288,7 @@ z-10
 "
 >
 
+
 <FaBriefcase
 className="
 text-white
@@ -300,13 +296,16 @@ text-lg
 "
 />
 
+
 </div>
 
 
 
 
 
-{/* Mobile icon */}
+
+
+{/* Mobile Icon */}
 
 <div
 className="
@@ -331,6 +330,7 @@ z-10
 "
 >
 
+
 <FaBriefcase
 className="
 text-white
@@ -338,7 +338,10 @@ text-sm
 "
 />
 
+
 </div>
+
+
 
 
 
@@ -361,45 +364,28 @@ duration:.3
 }}
 
 
+
 className="
 group
 relative
-
 w-full
-
 ml-12
-
 sm:ml-14
-
 md:ml-0
-
 md:w-[44%]
-
 bg-white
-
 rounded-2xl
-
 lg:rounded-3xl
-
 border
 border-gray-200
-
 shadow-lg
-
 hover:shadow-2xl
-
 hover:border-lime-400
-
 transition-all
-
 duration-300
-
 p-5
-
 sm:p-6
-
 lg:p-8
-
 "
 
 >
@@ -424,6 +410,7 @@ to-cyan-400
 
 
 
+
 <h3
 className="
 text-lg
@@ -434,9 +421,12 @@ text-[#071426]
 "
 >
 
-{item.title}
+{item.position}
 
 </h3>
+
+
+
 
 
 
@@ -449,6 +439,7 @@ gap-3
 mt-4
 "
 >
+
 
 <FaBuilding
 className="
@@ -480,6 +471,9 @@ leading-6
 
 
 
+
+
+
 <div
 className="
 flex
@@ -488,6 +482,7 @@ gap-3
 mt-3
 "
 >
+
 
 <FaCalendarAlt
 className="
@@ -504,12 +499,14 @@ text-gray-500
 "
 >
 
-{item.date}
+{item.duration}
 
 </span>
 
 
 </div>
+
+
 
 
 
@@ -533,6 +530,44 @@ text-gray-600
 
 
 
+{
+item.technologies?.length > 0 && (
+
+<div className="flex flex-wrap gap-2 mt-5">
+
+{
+item.technologies.map((tech,index)=>(
+
+<span
+key={index}
+className="
+px-3
+py-1
+rounded-full
+bg-green-100
+text-green-700
+text-sm
+"
+>
+
+{tech}
+
+</span>
+
+))
+}
+
+</div>
+
+)
+}
+
+
+
+
+
+
+
 <div
 className="
 mt-6
@@ -551,7 +586,11 @@ duration-500
 
 
 
+
 </motion.div>
+
+
+
 
 
 
@@ -575,9 +614,9 @@ duration-500
 
 </section>
 
-)
+);
 
-}
+};
 
 
 export default Experience;
