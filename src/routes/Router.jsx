@@ -23,7 +23,6 @@ import ProjectAdd from "../pages/ProjectAdd";
 
 // Contact
 import ContactManage from "../components/dashboard/ContactManage";
-import ProtectedRoute from "./ProtectedRoute";
 
 // =====================================
 // Router
@@ -57,128 +56,86 @@ const router = createBrowserRouter([
   // Protected Admin Dashboard
   // =====================================
 
-  {
-    element: <ProtectedRoute />,
+ // =====================================
+// Admin Dashboard
+// =====================================
 
-    children: [
-      {
-        path: "/dashboard",
-        element: <DashboardLayout />,
+{
+  path: "/dashboard",
+  element: <DashboardLayout />,
 
-        children: [
+  children: [
+    // Dashboard Home
+    {
+      index: true,
+      element: <DashboardHome />,
+    },
 
-          // =====================================
-          // Dashboard Home
-          // =====================================
+    // Profile
+    {
+      path: "profile",
+      element: <Profile />,
+    },
 
-          {
-            index: true,
-            element: <DashboardHome />,
-          },
+    // Experience
+    {
+      path: "experience",
+      element: <ExperienceManage />,
+    },
 
-          // =====================================
-          // Profile
-          // =====================================
+    {
+      path: "experience/add",
+      element: <ExperienceAdd />,
+    },
 
-          {
-            path: "profile",
-            element: <Profile />,
-          },
+    // Projects
+    {
+      path: "projects",
+      element: <ProjectManage />,
+    },
 
-          // =====================================
-          // Experience
-          // =====================================
+    {
+      path: "projects/add",
+      element: <ProjectAdd />,
+    },
 
-          {
-            path: "experience",
-            element: <ExperienceManage />,
-          },
+    // Contact
+    {
+      path: "contacts",
+      element: <ContactManage />,
+    },
 
-          {
-            path: "experience/add",
-            element: <ExperienceAdd />,
-          },
+    // Research
+    {
+      path: "research",
+      element: <Research />,
+    },
 
-          // =====================================
-          // Projects
-          // =====================================
+    // Publications
+    {
+      path: "publications",
+      element: <Publications />,
+    },
 
-          {
-            path: "projects",
-            element: <ProjectManage />,
-          },
+    // Gallery
+    {
+      path: "gallery",
+      element: <Gallery />,
+    },
 
-          {
-            path: "projects/add",
-            element: <ProjectAdd />,
-          },
+    // Messages
+    {
+      path: "messages",
+      element: <Messages />,
+    },
 
-          // Project Edit
-          // ProjectUpdate.jsx তৈরি করার পরে uncomment করবে
-
-          // {
-          //   path: "projects/edit/:id",
-          //   element: <ProjectUpdate />,
-          // },
-
-          // =====================================
-          // Contact Messages
-          // =====================================
-
-          {
-            path: "contacts",
-            element: <ContactManage />,
-          },
-
-          // =====================================
-          // Research
-          // =====================================
-
-          {
-            path: "research",
-            element: <Research />,
-          },
-
-          // =====================================
-          // Publications
-          // =====================================
-
-          {
-            path: "publications",
-            element: <Publications />,
-          },
-
-          // =====================================
-          // Gallery
-          // =====================================
-
-          {
-            path: "gallery",
-            element: <Gallery />,
-          },
-
-          // =====================================
-          // Messages
-          // =====================================
-
-          {
-            path: "messages",
-            element: <Messages />,
-          },
-
-          // =====================================
-          // Settings
-          // =====================================
-
-          {
-            path: "settings",
-            element: <Settings />,
-          },
-
-        ],
-      },
-    ],
-  },
+    // Settings
+    {
+      path: "settings",
+      element: <Settings />,
+    },
+  ],
+},
 ]);
 
 export default router;
