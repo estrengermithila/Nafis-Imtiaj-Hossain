@@ -1,23 +1,15 @@
+
 import axios from "axios";
 
-
 const API = axios.create({
-
-    baseURL:"http://localhost:5000/api"
-
+  baseURL: "https://nafis-imtiaj-hossain-server-opal.vercel.app/api",
 });
 
-
 export const createProfile = (formData) => {
-
-    return API.post(
-        "/profile",
-        formData,
-        {
-            headers:{
-                "Content-Type":"multipart/form-data"
-            }
-        }
-    );
-
+  return API.post("/profile", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };
+
