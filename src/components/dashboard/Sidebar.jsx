@@ -9,9 +9,13 @@ import {
   FaCog,
   FaSignOutAlt,
   FaFlask,
+  FaGraduationCap,
 } from "react-icons/fa";
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
+
+import { auth } from "../../firebase/firebase.config";
 
 const menuItems = [
   {
@@ -39,16 +43,17 @@ const menuItems = [
     path: "/dashboard/projects",
     icon: <FaProjectDiagram />,
   },
-  {
-    title: "Publications",
-    path: "/dashboard/publications",
-    icon: <FaBookOpen />,
-  },
-  {
-    title: "Gallery",
-    path: "/dashboard/gallery",
-    icon: <FaImages />,
-  },
+  { title: "Education", path: "/dashboard/education", icon: <FaGraduationCap />, },
+  // {
+  //   title: "Publications",
+  //   path: "/dashboard/publications",
+  //   icon: <FaBookOpen />,
+  // },
+  // {
+  //   title: "Gallery",
+  //   path: "/dashboard/gallery",
+  //   icon: <FaImages />,
+  // },
   {
     title: "Messages",
     path: "/dashboard/messages",
@@ -62,11 +67,29 @@ const menuItems = [
 ];
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      // Firebase logout
+      await signOut(auth);
+
+      // Clear saved admin information
+      localStorage.removeItem("admin");
+      localStorage.removeItem("adminToken");
+
+      // Go to admin login
+      navigate("/admin", { replace: true });
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
   return (
     <aside className="w-72 min-h-screen bg-slate-900 text-white shadow-lg">
-
+      
+      {/* Logo / Title */}
       <div className="py-8 border-b border-slate-700 text-center">
-
         <h2 className="text-2xl font-bold">
           Admin Dashboard
         </h2>
@@ -74,11 +97,10 @@ const Sidebar = () => {
         <p className="text-sm text-gray-400 mt-2">
           Nafis Portfolio
         </p>
-
       </div>
 
+      {/* Menu */}
       <div className="mt-6">
-
         {menuItems.map((item) => (
           <NavLink
             key={item.path}
@@ -93,27 +115,26 @@ const Sidebar = () => {
               }`
             }
           >
-            <span className="text-xl">{item.icon}</span>
+            <span className="text-xl">
+              {item.icon}
+            </span>
 
             <span>{item.title}</span>
-
           </NavLink>
         ))}
-
       </div>
 
+      {/* Logout */}
       <div className="absolute bottom-0 w-72 border-t border-slate-700">
-
-        <button className="flex items-center gap-4 px-6 py-5 w-full hover:bg-red-600 duration-300">
-
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-4 px-6 py-5 w-full hover:bg-red-600 duration-300"
+        >
           <FaSignOutAlt />
 
-          Logout
-
+          <span>Logout</span>
         </button>
-
       </div>
-
     </aside>
   );
 };

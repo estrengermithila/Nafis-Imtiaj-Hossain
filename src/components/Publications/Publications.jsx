@@ -699,83 +699,65 @@ DOI
 {/* Bottom Button */}
 
 
+{/* Bottom Button */}
+
 <motion.div
-
-initial={{
-opacity:0,
-y:30
-}}
-
-whileInView={{
-opacity:1,
-y:0
-}}
-
-viewport={{
-once:false
-}}
-
-transition={{
-duration:.8
-}}
-
-
-className="
-mt-10
-sm:mt-12
-flex
-justify-center
-lg:justify-start
-"
-
+  initial={{
+    opacity: 0,
+    y: 30,
+  }}
+  whileInView={{
+    opacity: 1,
+    y: 0,
+  }}
+  viewport={{
+    once: false,
+  }}
+  transition={{
+    duration: 0.8,
+  }}
+  className="
+    mt-10
+    sm:mt-12
+    flex
+    justify-center
+    lg:justify-start
+  "
 >
-
-
-<a
-
-href="https://scholar.google.com/"
-
-target="_blank"
-
-rel="noopener noreferrer"
-
-
-className="
-inline-flex
-items-center
-gap-3
-px-6
-sm:px-8
-py-3
-sm:py-4
-rounded-xl
-font-semibold
-text-black
-bg-gradient-to-r
-from-lime-400
-via-green-400
-to-cyan-400
-shadow-lg
-hover:shadow-2xl
-hover:scale-105
-transition-all
-duration-300
-text-sm
-sm:text-base
-"
-
->
-
-
-<FaExternalLinkAlt/>
-
-View All Publications
-
-
-</a>
-
-
+  <a
+    href="https://scholar.google.com/citations?user=0leT8GAAAAAJ&hl=en"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="
+      inline-flex
+      items-center
+      gap-3
+      px-6
+      sm:px-8
+      py-3
+      sm:py-4
+      rounded-xl
+      font-semibold
+      text-black
+      bg-gradient-to-r
+      from-lime-400
+      via-green-400
+      to-cyan-400
+      shadow-lg
+      hover:shadow-2xl
+      hover:scale-105
+      transition-all
+      duration-300
+      text-sm
+      sm:text-base
+    "
+  >
+    <FaExternalLinkAlt />
+    View All Publications
+  </a>
 </motion.div>
+
+
 
 
 

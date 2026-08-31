@@ -1,8 +1,10 @@
+
 import { createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
 import AdminLogin from "../layouts/AdminLogin";
 import DashboardLayout from "../layouts/DashboardLayout";
+import ProtectedRoute from "./ProtectedRoute";
 
 // Dashboard Pages
 import DashboardHome from "../pages/DashboardHome";
@@ -16,6 +18,7 @@ import Settings from "../pages/Settings";
 // Experience
 import ExperienceManage from "../components/Experience/ExperienceManage";
 import ExperienceAdd from "../pages/admin/ExperienceAdd";
+import ExperienceEdit from "../pages/admin/ExperienceEdit";
 
 // Projects
 import ProjectManage from "../components/Projects/ProjectManage";
@@ -23,6 +26,9 @@ import ProjectAdd from "../pages/ProjectAdd";
 
 // Contact
 import ContactManage from "../components/dashboard/ContactManage";
+import ProjectEdit from "../pages/ProjectEdit";
+import Education from './../components/Education/Education';
+import EducationManage from "../pages/admin/EducationManage";
 
 // =====================================
 // Router
@@ -32,7 +38,6 @@ const router = createBrowserRouter([
   // =====================================
   // Public Website
   // =====================================
-
   {
     path: "/",
     element: <MainLayout />,
@@ -41,7 +46,6 @@ const router = createBrowserRouter([
   // =====================================
   // Admin Login
   // =====================================
-
   {
     path: "/admin",
     element: <AdminLogin />,
@@ -55,87 +59,127 @@ const router = createBrowserRouter([
   // =====================================
   // Protected Admin Dashboard
   // =====================================
+  {
+    path: "/dashboard",
 
- // =====================================
-// Admin Dashboard
-// =====================================
+    element: <ProtectedRoute />,
 
-{
-  path: "/dashboard",
-  element: <DashboardLayout />,
+    children: [
+      {
+        element: <DashboardLayout />,
 
-  children: [
-    // Dashboard Home
-    {
-      index: true,
-      element: <DashboardHome />,
-    },
+        children: [
+          // =====================================
+          // Dashboard Home
+          // =====================================
+          {
+            index: true,
+            element: <DashboardHome />,
+          },
 
-    // Profile
-    {
-      path: "profile",
-      element: <Profile />,
-    },
+          // =====================================
+          // Profile
+          // =====================================
+          {
+            path: "profile",
+            element: <Profile />,
+          },
+          // Education
 
-    // Experience
-    {
-      path: "experience",
-      element: <ExperienceManage />,
-    },
 
-    {
-      path: "experience/add",
-      element: <ExperienceAdd />,
-    },
+           {
+          path: "education",
+          element: <EducationManage />,
+        },
 
-    // Projects
-    {
-      path: "projects",
-      element: <ProjectManage />,
-    },
+          // =====================================
+          // Experience
+          // =====================================
+          {
+            path: "experience",
+            element: <ExperienceManage />,
+          },
 
-    {
-      path: "projects/add",
-      element: <ProjectAdd />,
-    },
+          {
+            path: "experience/add",
+            element: <ExperienceAdd />,
+          },
 
-    // Contact
-    {
-      path: "contacts",
-      element: <ContactManage />,
-    },
+          {
+            path: "experience/edit/:id",
+            element: <ExperienceEdit />,
+          },
 
-    // Research
-    {
-      path: "research",
-      element: <Research />,
-    },
+          // =====================================
+          // Projects
+          // =====================================
+          {
+            path: "projects",
+            element: <ProjectManage />,
+          },
 
-    // Publications
-    {
-      path: "publications",
-      element: <Publications />,
-    },
+          {
+            path: "projects/add",
+            element: <ProjectAdd />,
+          },
 
-    // Gallery
-    {
-      path: "gallery",
-      element: <Gallery />,
-    },
+          {
+            path: "projects/edit/:id",
+            element: <ProjectEdit />,
+          },
 
-    // Messages
-    {
-      path: "messages",
-      element: <Messages />,
-    },
+          // =====================================
+          // Contacts
+          // =====================================
+          {
+            path: "contacts",
+            element: <ContactManage />,
+          },
 
-    // Settings
-    {
-      path: "settings",
-      element: <Settings />,
-    },
-  ],
-},
+          // =====================================
+          // Research
+          // =====================================
+          {
+            path: "research",
+            element: <Research />,
+          },
+
+          // =====================================
+          // Publications
+          // =====================================
+          {
+            path: "publications",
+            element: <Publications />,
+          },
+
+          // =====================================
+          // Gallery
+          // =====================================
+          {
+            path: "gallery",
+            element: <Gallery />,
+          },
+
+          // =====================================
+          // Messages
+          // =====================================
+          {
+            path: "messages",
+            element: <Messages />,
+          },
+
+          // =====================================
+          // Settings
+          // =====================================
+          {
+            path: "settings",
+            element: <Settings />,
+          },
+        ],
+      },
+    ],
+  },
 ]);
 
 export default router;
+

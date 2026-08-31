@@ -1,13 +1,20 @@
+
+import { useState } from "react";
+
 import useProjects from "../../hooks/useProjects";
+
 import {
   FaGithub,
   FaExternalLinkAlt,
   FaFolderOpen,
+  FaChevronDown,
+  FaChevronUp,
 } from "react-icons/fa";
 
 const Projects = () => {
   const { projects, loading } = useProjects();
 
+  const [showAll, setShowAll] = useState(false);
 
   if (loading) {
     return (
@@ -27,6 +34,12 @@ const Projects = () => {
     );
   }
 
+  // প্রথমে ৬টা project দেখাবে
+  // View All করলে সব project দেখাবে
+  const visibleProjects = showAll
+    ? projects
+    : projects.slice(0, 6);
+
   return (
     <section
       id="projects"
@@ -37,10 +50,9 @@ const Projects = () => {
         {/* Section Heading */}
 
         <div className="text-center mb-16">
-
-          <span className="inline-block px-4 py-2 rounded-full bg-green-100 text-green-700 font-semibold text-sm">
+          {/* <span className="inline-block px-4 py-2 rounded-full bg-green-100 text-green-700 font-semibold text-sm">
             My Portfolio
-          </span>
+          </span> */}
 
           <h2 className="mt-5 text-4xl md:text-5xl font-bold text-slate-900">
             Featured Projects
@@ -53,15 +65,13 @@ const Projects = () => {
           </p>
 
           <div className="w-24 h-1 rounded-full bg-gradient-to-r from-green-500 via-lime-400 to-cyan-400 mx-auto mt-6"></div>
-
         </div>
 
         {/* Projects Grid */}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-          {projects.map((project) => (
-
+          {visibleProjects.map((project) => (
             <div
               key={project._id}
               className="
@@ -84,7 +94,7 @@ const Projects = () => {
 
               <div className="p-7">
 
-                                {/* Category */}
+                {/* Category */}
 
                 {project.category && (
                   <div className="flex items-center gap-2 mb-4">
@@ -187,13 +197,13 @@ const Projects = () => {
                             {tech.trim()}
                           </span>
                         ))}
-
                 </div>
 
                 {/* Buttons */}
 
                 <div className="flex gap-3">
-                                    {project.github && (
+
+                  {project.github && (
                     <a
                       href={project.github}
                       target="_blank"
@@ -250,17 +260,59 @@ const Projects = () => {
                 </div>
 
               </div>
-
             </div>
-
           ))}
 
         </div>
 
-      </div>
+        {/* View All / View Less */}
 
+        {projects.length > 6 && (
+          <div className="flex justify-center mt-12">
+
+            <button
+              type="button"
+              onClick={() => setShowAll((prev) => !prev)}
+              className="
+                inline-flex
+                items-center
+                gap-2
+                px-7
+                py-3
+                rounded-full
+                bg-gradient-to-r
+                from-green-500
+                via-lime-400
+                to-cyan-400
+                text-slate-900
+                font-semibold
+                shadow-md
+                hover:shadow-xl
+                hover:-translate-y-1
+                transition-all
+                duration-300
+              "
+            >
+              {showAll ? (
+                <>
+                  View Less
+                  <FaChevronUp />
+                </>
+              ) : (
+                <>
+                  View All Projects
+                  <FaChevronDown />
+                </>
+              )}
+            </button>
+
+          </div>
+        )}
+
+      </div>
     </section>
   );
 };
 
 export default Projects;
+

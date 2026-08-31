@@ -1,5 +1,8 @@
+
 import { useState } from "react";
+
 import { FaBars, FaTimes } from "react-icons/fa";
+
 import logo from "../../assets/logo.jpg";
 
 const Navbar = () => {
@@ -32,15 +35,15 @@ const Navbar = () => {
   return (
     <header
       className="
-      fixed
-      top-0
-      left-0
-      w-full
-      z-50
-      bg-white/90
-      backdrop-blur-md
-      shadow-md
-    "
+        fixed
+        top-0
+        left-0
+        w-full
+        z-50
+        bg-white/90
+        backdrop-blur-md
+        shadow-md
+      "
     >
       <div className="px-6 py-5">
 
@@ -48,11 +51,11 @@ const Navbar = () => {
 
         <div
           className="
-          flex
-          items-center
-          justify-between
-          lg:hidden
-        "
+            flex
+            items-center
+            justify-between
+            lg:hidden
+          "
         >
           <img
             src={logo}
@@ -91,20 +94,20 @@ const Navbar = () => {
 
         <div
           className="
-          hidden
-          lg:grid
-          lg:grid-cols-[280px_1fr_180px]
-          items-center
-        "
+            hidden
+            lg:grid
+            lg:grid-cols-[280px_1fr_180px]
+            items-center
+          "
         >
           {/* Logo + Name */}
 
           <div
             className="
-            flex
-            items-center
-            gap-3
-          "
+              flex
+              items-center
+              gap-3
+            "
           >
             <img
               src={logo}
@@ -131,9 +134,7 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* এখান থেকে Desktop Menu শুরু হবে (Part 2) */}
-
-                    {/* Desktop Menu */}
+          {/* Desktop Menu */}
 
           <nav
             className="
@@ -146,7 +147,9 @@ const Navbar = () => {
             {menuItems.map((item) => (
               <button
                 key={item.name}
-                onClick={() => scrollToSection(item.href, item.name)}
+                onClick={() =>
+                  scrollToSection(item.href, item.name)
+                }
                 className={`
                   relative
                   pb-2
@@ -155,7 +158,6 @@ const Navbar = () => {
                   font-medium
                   transition-all
                   duration-300
-
                   ${
                     active === item.name
                       ? "bg-gradient-to-r from-lime-400 via-green-400 to-cyan-400 bg-clip-text text-transparent"
@@ -178,11 +180,10 @@ const Navbar = () => {
                     to-cyan-400
                     transition-all
                     duration-300
-
                     ${
                       active === item.name
                         ? "w-full"
-                        : "w-0 group-hover:w-full"
+                        : "w-0"
                     }
                   `}
                 ></span>
@@ -194,15 +195,27 @@ const Navbar = () => {
 
           <div className="flex justify-end">
             <button
-              onClick={() => scrollToSection("#contact", "Contact")}
+              onClick={() =>
+                scrollToSection("#contact", "Contact")
+              }
               className="
-                bg-primary
-                text-black
-                px-5
-                py-2
+                inline-flex
+                items-center
+                justify-center
+                px-6
+                py-3
                 rounded-full
-                hover:opacity-80
-                transition
+                bg-gradient-to-r
+                from-lime-400
+                via-green-400
+                to-cyan-400
+                text-[#071426]
+                font-semibold
+                shadow-md
+                hover:shadow-xl
+                hover:scale-105
+                transition-all
+                duration-300
               "
             >
               Contact Me
@@ -233,14 +246,17 @@ const Navbar = () => {
               {menuItems.map((item) => (
                 <button
                   key={item.name}
-                  onClick={() => scrollToSection(item.href, item.name)}
+                  onClick={() =>
+                    scrollToSection(
+                      item.href,
+                      item.name
+                    )
+                  }
                   className={`
-
                     text-left
                     font-medium
                     transition-all
                     duration-300
-
                     ${
                       active === item.name
                         ? "bg-gradient-to-r from-lime-400 via-green-400 to-cyan-400 bg-clip-text text-transparent"
@@ -252,13 +268,29 @@ const Navbar = () => {
                 </button>
               ))}
 
+              {/* Mobile Contact Button */}
+
               <button
-                onClick={() => scrollToSection("#contact", "Contact")}
+                onClick={() =>
+                  scrollToSection("#contact", "Contact")
+                }
                 className="
-                  bg-primary
-                  text-black
-                  py-2
+                  inline-flex
+                  items-center
+                  justify-center
+                  bg-gradient-to-r
+                  from-lime-400
+                  via-green-400
+                  to-cyan-400
+                  text-[#071426]
+                  py-3
                   rounded-full
+                  font-semibold
+                  shadow-md
+                  hover:shadow-xl
+                  hover:scale-105
+                  transition-all
+                  duration-300
                 "
               >
                 Contact Me
@@ -272,3 +304,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

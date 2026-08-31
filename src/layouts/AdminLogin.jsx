@@ -1,7 +1,8 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/firebase.config";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -22,54 +23,68 @@ const AdminLogin = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  setError("");
+  setLoading(true);
 
-    setError("");
-    setLoading(true);
+  try {
+    const result = await signInWithEmailAndPassword(
+      auth,
+      formData.email,
+      formData.password
+    );
 
-    try {
-      const response = await axios.post(
-        "https://nafis-imtiaj-hossain-server-opal.vercel.app/api/auth/login",
-        formData
-      );
+    const user = result.user;
 
-      console.log("LOGIN RESPONSE:", response.data);
+    console.log("FIREBASE USER:", user);
 
-      if (response.data.success) {
-        // Save JWT Token
-        localStorage.setItem(
-          "adminToken",
-          response.data.token
-        );
+    // Admin email
+   const adminEmail = "mithilafarjanam20@gmail.com";
 
-        // Save Admin Info
-        localStorage.setItem(
-          "admin",
-          JSON.stringify(response.data.admin)
-        );
+    // Check admin
+    if (user.email !== adminEmail) {
+      setError("You are not authorized as an admin.");
 
-        console.log(
-          "SAVED TOKEN:",
-          localStorage.getItem("adminToken")
-        );
+      await auth.signOut();
 
-        // Go Dashboard
-        navigate("/dashboard");
-      }
-    } catch (error) {
-      console.log(
-        "LOGIN ERROR:",
-        error.response?.data || error
-      );
-
-      setError(
-        error.response?.data?.message ||
-          "Login failed"
-      );
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
+
+    // Save admin information
+    localStorage.setItem(
+      "admin",
+      JSON.stringify({
+        uid: user.uid,
+        email: user.email,
+      })
+    );
+
+    // Save Firebase ID Token
+    const token = await user.getIdToken();
+
+    localStorage.setItem("adminToken", token);
+
+    console.log("ADMIN LOGIN SUCCESS");
+
+    // Go Dashboard
+    navigate("/dashboard");
+
+  } catch (error) {
+    console.log("LOGIN ERROR:", error);
+
+    if (error.code === "auth/invalid-credential") {
+      setError("Invalid email or password.");
+    } else if (error.code === "auth/user-not-found") {
+      setError("Admin account not found.");
+    } else if (error.code === "auth/wrong-password") {
+      setError("Wrong password.");
+    } else {
+      setError("Login failed. Please try again.");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
