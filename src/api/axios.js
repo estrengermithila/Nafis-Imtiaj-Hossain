@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosPublic = axios.create({
-baseURL: "http://localhost:5000/api"
+  baseURL: "https://nafis-imtiaj-hossain-server-opal.vercel.app/api",
 });
 
 export default axiosPublic;
