@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axiosPublic from "../../api/axios";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaGraduationCap,
@@ -8,7 +8,7 @@ import {
   FaChevronUp,
 } from "react-icons/fa";
 
-// Imtiaz / Education Image
+// Education Image
 import educationImg from "../../assets/contact.jpg";
 
 const Education = () => {
@@ -17,14 +17,14 @@ const Education = () => {
   const [showAll, setShowAll] = useState(false);
 
   // =====================================
-  // Fetch Education
+  // Fetch Education from Deployed API
   // =====================================
   useEffect(() => {
     const fetchEducation = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:5000/api/profile"
-        );
+        const res = await axiosPublic.get("/profile");
+
+        console.log("EDUCATION RESPONSE:", res.data);
 
         if (res.data?.success) {
           setEducations(res.data?.data?.education || []);
@@ -59,13 +59,15 @@ const Education = () => {
     );
   }
 
+  // =====================================
+  // Main Section
+  // =====================================
   return (
     <section
       id="education"
       className="w-full bg-white py-20 md:py-24"
     >
       <div className="w-full max-w-[1450px] mx-auto px-6 lg:px-12">
-
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
 
           {/* =====================================
@@ -150,10 +152,8 @@ const Education = () => {
               </p>
             ) : (
               <div className="space-y-8">
-
                 <AnimatePresence mode="popLayout">
                   {visibleEducations.map((education, index) => (
-
                     <motion.div
                       key={education._id || index}
                       initial={{
@@ -193,9 +193,7 @@ const Education = () => {
                       `}
                     >
 
-                      {/* =====================================
-                          SMALL GRADUATION ICON
-                      ===================================== */}
+                      {/* Graduation Icon */}
                       <div
                         className="
                           absolute
@@ -218,9 +216,7 @@ const Education = () => {
                         <FaGraduationCap />
                       </div>
 
-                      {/* =====================================
-                          DEGREE
-                      ===================================== */}
+                      {/* Degree */}
                       <h3
                         className="
                           text-xl
@@ -233,9 +229,7 @@ const Education = () => {
                         {education.degree}
                       </h3>
 
-                      {/* =====================================
-                          INSTITUTION
-                      ===================================== */}
+                      {/* Institution */}
                       <p
                         className={`
                           mt-2
@@ -250,30 +244,21 @@ const Education = () => {
                         {education.institution}
                       </p>
 
-                      {/* =====================================
-                          FIELD
-                      ===================================== */}
+                      {/* Field */}
                       {education.field && (
                         <p className="mt-1 text-gray-500">
                           {education.field}
                         </p>
                       )}
 
-                      {/* =====================================
-                          START / END YEAR
-                      ===================================== */}
-                      {(education.startYear ||
-                        education.endYear) && (
+                      {/* Start / End Year */}
+                      {(education.startYear || education.endYear) && (
                         <p className="mt-2 text-gray-500 text-sm">
-                          {education.startYear}{" "}
-                          -{" "}
-                          {education.endYear}
+                          {education.startYear} - {education.endYear}
                         </p>
                       )}
 
-                      {/* =====================================
-                          DESCRIPTION
-                      ===================================== */}
+                      {/* Description */}
                       {education.description && (
                         <p
                           className="
@@ -287,11 +272,9 @@ const Education = () => {
                           {education.description}
                         </p>
                       )}
-
                     </motion.div>
                   ))}
                 </AnimatePresence>
-
               </div>
             )}
 
@@ -331,7 +314,6 @@ const Education = () => {
                   {showAll ? (
                     <>
                       View Less
-
                       <FaChevronUp
                         className="
                           group-hover:-translate-y-1
@@ -342,7 +324,6 @@ const Education = () => {
                   ) : (
                     <>
                       View All Education
-
                       <FaChevronDown
                         className="
                           group-hover:translate-y-1
