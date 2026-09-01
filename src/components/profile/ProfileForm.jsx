@@ -10,7 +10,6 @@ import SocialLinks from "./SocialLinks";
 import axiosPublic from "../../api/axios";
 
 const ProfileForm = () => {
-  const [profileId, setProfileId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -31,7 +30,6 @@ const ProfileForm = () => {
   // =====================================
   // Fetch Existing Profile
   // =====================================
-
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -39,11 +37,11 @@ const ProfileForm = () => {
 
         const res = await axiosPublic.get("/profile");
 
+        console.log("PROFILE RESPONSE:", res.data);
+
         const profile = res.data?.data;
 
         if (profile) {
-          setProfileId(profile._id);
-
           setProfileData({
             image: profile.image || "",
 
@@ -58,14 +56,18 @@ const ProfileForm = () => {
             },
 
             skills: profile.skills || [],
-
             cv: profile.cv || "",
-
             education: profile.education || [],
           });
         }
       } catch (error) {
-        console.error("Fetch Profile Error:", error);
+        if (error?.response?.status === 404) {
+          console.log(
+            "No profile found. A new profile will be created."
+          );
+        } else {
+          console.error("Fetch Profile Error:", error);
+        }
       } finally {
         setLoading(false);
       }
@@ -77,14 +79,8 @@ const ProfileForm = () => {
   // =====================================
   // Save / Update Profile
   // =====================================
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!profileId) {
-      alert("Profile not found!");
-      return;
-    }
 
     try {
       setSaving(true);
@@ -94,7 +90,6 @@ const ProfileForm = () => {
       // =====================================
       // Image
       // =====================================
-
       if (profileData.image instanceof File) {
         formData.append("image", profileData.image);
       }
@@ -102,7 +97,6 @@ const ProfileForm = () => {
       // =====================================
       // CV
       // =====================================
-
       if (profileData.cv instanceof File) {
         formData.append("cv", profileData.cv);
       }
@@ -110,48 +104,50 @@ const ProfileForm = () => {
       // =====================================
       // Social Links
       // =====================================
-
       formData.append(
         "socialLinks",
-        JSON.stringify(profileData.socialLinks)
+        JSON.stringify(profileData.socialLinks || {})
       );
 
       // =====================================
       // Skills
       // =====================================
-
       formData.append(
         "skills",
-        JSON.stringify(profileData.skills)
+        JSON.stringify(profileData.skills || [])
       );
 
       // =====================================
       // Education
       // =====================================
-
       formData.append(
         "education",
-        JSON.stringify(profileData.education)
+        JSON.stringify(profileData.education || [])
       );
 
       // =====================================
-      // Update Backend
+      // IMPORTANT:
+      // Backend route is PATCH /api/profile
+      // NOT PATCH /api/profile/:id
       // =====================================
+      console.log(
+        "PATCHING PROFILE:",
+        "/profile"
+      );
 
       const response = await axiosPublic.patch(
-        `/profile/${profileId}`,
+        "/profile",
         formData
       );
 
       console.log(
-        "Updated Profile:",
+        "PROFILE SAVE RESPONSE:",
         response.data
       );
 
       // =====================================
-      // Update Frontend State Immediately
+      // Update Frontend State
       // =====================================
-
       const updatedProfile = response.data?.data;
 
       if (updatedProfile) {
@@ -172,24 +168,26 @@ const ProfileForm = () => {
           },
 
           skills: updatedProfile.skills || [],
-
           cv: updatedProfile.cv || "",
-
-          education:
-            updatedProfile.education || [],
+          education: updatedProfile.education || [],
         });
       }
 
-      alert("Profile updated successfully!");
+      alert(
+        response.data?.message ||
+          "Profile saved successfully!"
+      );
     } catch (error) {
+      console.error("Profile Save Error:", error);
+
       console.error(
-        "Profile Update Error:",
-        error
+        "Server Response:",
+        error?.response?.data
       );
 
       alert(
         error?.response?.data?.message ||
-          "Failed to update profile"
+          "Failed to save profile"
       );
     } finally {
       setSaving(false);
@@ -199,7 +197,6 @@ const ProfileForm = () => {
   // =====================================
   // Loading
   // =====================================
-
   if (loading) {
     return (
       <div className="flex justify-center items-center py-20">
@@ -211,49 +208,42 @@ const ProfileForm = () => {
   // =====================================
   // UI
   // =====================================
-
   return (
     <form
       onSubmit={handleSubmit}
       className="space-y-6"
     >
       {/* Profile Image */}
-
       <ProfileImageUpload
         profileData={profileData}
         setProfileData={setProfileData}
       />
 
       {/* Social Links */}
-
       <SocialLinks
         profileData={profileData}
         setProfileData={setProfileData}
       />
 
       {/* Skills */}
-
       <SkillsInput
         profileData={profileData}
         setProfileData={setProfileData}
       />
 
       {/* CV */}
-
       <CVUpload
         profileData={profileData}
         setProfileData={setProfileData}
       />
 
       {/* Education */}
-
       <EducationSection
         profileData={profileData}
         setProfileData={setProfileData}
       />
 
-      {/* Save Button */}
-
+      {/* Save */}
       <button
         type="submit"
         disabled={saving}
