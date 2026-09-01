@@ -22,7 +22,6 @@ const EducationManage = () => {
   const [education, setEducation] = useState([]);
   const [formData, setFormData] = useState(initialFormData);
 
-  const [profileId, setProfileId] = useState(null);
   const [editingId, setEditingId] = useState(null);
 
   const [loading, setLoading] = useState(true);
@@ -32,12 +31,13 @@ const EducationManage = () => {
   // =====================================
   // Fetch Profile / Education
   // =====================================
-
   const fetchEducation = async () => {
     try {
       setLoading(true);
 
       const res = await axiosPublic.get("/profile");
+
+      console.log("PROFILE RESPONSE:", res.data);
 
       const profile = res.data?.data;
 
@@ -46,15 +46,16 @@ const EducationManage = () => {
         return;
       }
 
-      setProfileId(profile._id);
-
       setEducation(
         Array.isArray(profile.education)
           ? profile.education
           : []
       );
     } catch (error) {
-      console.error("Fetch education error:", error);
+      console.error(
+        "Fetch education error:",
+        error
+      );
 
       setEducation([]);
     } finally {
@@ -69,7 +70,6 @@ const EducationManage = () => {
   // =====================================
   // Handle Input
   // =====================================
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -82,55 +82,58 @@ const EducationManage = () => {
   // =====================================
   // Reset Form
   // =====================================
-
   const resetForm = () => {
-    setFormData(initialFormData);
+    setFormData({
+      ...initialFormData,
+    });
+
     setEditingId(null);
   };
 
   // =====================================
   // Add / Update Education
   // =====================================
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!profileId) {
-      alert("Profile not found!");
+    // Basic validation
+    if (
+      !formData.degree.trim() ||
+      !formData.institution.trim()
+    ) {
+      alert(
+        "Please enter Degree and Institution."
+      );
       return;
     }
 
     try {
       setSaving(true);
 
-      let updatedEducation;
+      let updatedEducation = [];
 
       // =====================================
-      // UPDATE
+      // UPDATE EDUCATION
       // =====================================
-
       if (editingId) {
-        updatedEducation = education.map((item) => {
-          if (item._id === editingId) {
-            return {
-              ...item,
-              ...formData,
-            };
-          }
+        updatedEducation = education.map(
+          (item) => {
+            if (item._id === editingId) {
+              return {
+                ...item,
+                ...formData,
+              };
+            }
 
-          return item;
-        });
+            return item;
+          }
+        );
       }
 
       // =====================================
-      // ADD
+      // ADD EDUCATION
       // =====================================
-
       else {
-        // IMPORTANT:
-        // এখানে manually _id দেওয়া যাবে না.
-        // MongoDB/Mongoose automatically _id generate করবে.
-
         const newEducation = {
           ...formData,
         };
@@ -141,25 +144,52 @@ const EducationManage = () => {
         ];
       }
 
-      // =====================================
-      // Update Profile
-      // =====================================
-
-      const res = await axiosPublic.patch(
-        `/profile/${profileId}`,
-        {
-          education: updatedEducation,
-        }
+      console.log(
+        "UPDATED EDUCATION:",
+        updatedEducation
       );
 
       // =====================================
-      // Backend থেকে updated data
+      // FormData
       // =====================================
+      const formDataToSend = new FormData();
 
+      formDataToSend.append(
+        "education",
+        JSON.stringify(updatedEducation)
+      );
+
+      // =====================================
+      // IMPORTANT
+      //
+      // Backend route:
+      // PATCH /api/profile
+      //
+      // NOT:
+      // PATCH /api/profile/:id
+      // =====================================
+      const res = await axiosPublic.patch(
+        "/profile",
+        formDataToSend
+      );
+
+      console.log(
+        "EDUCATION SAVE RESPONSE:",
+        res.data
+      );
+
+      // =====================================
+      // Get Updated Education
+      // =====================================
       const updatedData =
-        res.data?.data?.education || updatedEducation;
+        res.data?.data?.education ||
+        updatedEducation;
 
-      setEducation(updatedData);
+      setEducation(
+        Array.isArray(updatedData)
+          ? updatedData
+          : []
+      );
 
       resetForm();
 
@@ -174,6 +204,11 @@ const EducationManage = () => {
         error
       );
 
+      console.error(
+        "Server response:",
+        error?.response?.data
+      );
+
       alert(
         error?.response?.data?.message ||
           "Failed to save education"
@@ -184,10 +219,11 @@ const EducationManage = () => {
   };
 
   // =====================================
-  // Edit
+  // Edit Education
   // =====================================
-
   const handleEdit = (item) => {
+    if (!item) return;
+
     setEditingId(item._id);
 
     setFormData({
@@ -206,55 +242,87 @@ const EducationManage = () => {
   };
 
   // =====================================
-  // Delete
+  // Delete Education
   // =====================================
-
   const handleDelete = async (id) => {
+    if (!id) {
+      alert("Education ID not found.");
+      return;
+    }
+
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this education?"
     );
 
     if (!confirmDelete) return;
 
-    if (!profileId) {
-      alert("Profile not found!");
-      return;
-    }
-
     try {
       setDeletingId(id);
 
-      const updatedEducation = education.filter(
-        (item) => item._id !== id
+      // Remove selected education
+      const updatedEducation =
+        education.filter(
+          (item) => item._id !== id
+        );
+
+      console.log(
+        "EDUCATION AFTER DELETE:",
+        updatedEducation
       );
 
+      // =====================================
+      // FormData
+      // =====================================
+      const formDataToSend = new FormData();
+
+      formDataToSend.append(
+        "education",
+        JSON.stringify(updatedEducation)
+      );
+
+      // =====================================
+      // Update Profile
+      // =====================================
       const res = await axiosPublic.patch(
-        `/profile/${profileId}`,
-        {
-          education: updatedEducation,
-        }
+        "/profile",
+        formDataToSend
       );
 
+      console.log(
+        "EDUCATION DELETE RESPONSE:",
+        res.data
+      );
+
+      // =====================================
+      // Updated Education
+      // =====================================
       const updatedData =
         res.data?.data?.education ||
         updatedEducation;
 
-      // =====================================
-      // Frontend immediately update
-      // =====================================
+      setEducation(
+        Array.isArray(updatedData)
+          ? updatedData
+          : []
+      );
 
-      setEducation(updatedData);
-
-      // যদি deleted item edit mode-এ থাকে
+      // If deleted item was being edited
       if (editingId === id) {
         resetForm();
       }
 
-      alert("Education deleted successfully!");
+      alert(
+        "Education deleted successfully!"
+      );
     } catch (error) {
       console.error(
         "Delete education error:",
         error
+      );
+
+      console.error(
+        "Server response:",
+        error?.response?.data
       );
 
       alert(
@@ -269,7 +337,6 @@ const EducationManage = () => {
   // =====================================
   // Cancel Edit
   // =====================================
-
   const handleCancel = () => {
     resetForm();
   };
@@ -277,7 +344,6 @@ const EducationManage = () => {
   // =====================================
   // Loading
   // =====================================
-
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[300px]">
@@ -289,28 +355,26 @@ const EducationManage = () => {
   // =====================================
   // UI
   // =====================================
-
   return (
     <div className="max-w-6xl mx-auto">
 
       {/* =====================================
           Header
       ===================================== */}
-
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900">
           Education Management
         </h1>
 
         <p className="text-gray-500 mt-2">
-          Add, edit and manage your academic background.
+          Add, edit and manage your academic
+          background.
         </p>
       </div>
 
       {/* =====================================
           Add / Edit Form
       ===================================== */}
-
       <div className="bg-white rounded-2xl shadow-md border border-gray-200 p-6 sm:p-8 mb-10">
 
         <div className="flex items-center gap-3 mb-6">
@@ -339,7 +403,6 @@ const EducationManage = () => {
         >
 
           {/* Degree */}
-
           <div>
             <label className="block mb-2 font-medium text-gray-700">
               Degree
@@ -357,7 +420,6 @@ const EducationManage = () => {
           </div>
 
           {/* Institution */}
-
           <div>
             <label className="block mb-2 font-medium text-gray-700">
               Institution
@@ -375,7 +437,6 @@ const EducationManage = () => {
           </div>
 
           {/* Field */}
-
           <div>
             <label className="block mb-2 font-medium text-gray-700">
               Field of Study
@@ -392,7 +453,6 @@ const EducationManage = () => {
           </div>
 
           {/* Years */}
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             <div>
@@ -428,7 +488,6 @@ const EducationManage = () => {
           </div>
 
           {/* Description */}
-
           <div>
             <label className="block mb-2 font-medium text-gray-700">
               Description
@@ -444,7 +503,6 @@ const EducationManage = () => {
           </div>
 
           {/* Buttons */}
-
           <div className="flex items-center gap-3">
 
             <button
@@ -500,7 +558,6 @@ const EducationManage = () => {
       {/* =====================================
           Education List
       ===================================== */}
-
       <div>
 
         <h2 className="text-2xl font-bold text-slate-900 mb-5">
@@ -526,7 +583,10 @@ const EducationManage = () => {
             {education.map((item, index) => (
 
               <div
-                key={item._id || `education-${index}`}
+                key={
+                  item._id ||
+                  `education-${index}`
+                }
                 className="
                   bg-white
                   border
@@ -542,7 +602,6 @@ const EducationManage = () => {
                 <div className="flex flex-col sm:flex-row justify-between gap-5">
 
                   {/* Information */}
-
                   <div className="flex-1">
 
                     <h3 className="text-xl font-bold text-slate-900">
@@ -562,7 +621,8 @@ const EducationManage = () => {
                     {(item.startYear ||
                       item.endYear) && (
                       <p className="text-sm text-gray-500 mt-2">
-                        {item.startYear} – {item.endYear}
+                        {item.startYear} –{" "}
+                        {item.endYear}
                       </p>
                     )}
 
@@ -575,13 +635,14 @@ const EducationManage = () => {
                   </div>
 
                   {/* Actions */}
-
                   <div className="flex items-start gap-2">
 
                     {/* Edit */}
-
                     <button
-                      onClick={() => handleEdit(item)}
+                      type="button"
+                      onClick={() =>
+                        handleEdit(item)
+                      }
                       className="
                         p-3
                         rounded-lg
@@ -595,8 +656,8 @@ const EducationManage = () => {
                     </button>
 
                     {/* Delete */}
-
                     <button
+                      type="button"
                       onClick={() =>
                         handleDelete(item._id)
                       }
@@ -629,7 +690,6 @@ const EducationManage = () => {
             ))}
 
           </div>
-
         )}
 
       </div>

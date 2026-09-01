@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 
 const EducationSection = ({ profileData, setProfileData }) => {
@@ -15,7 +16,6 @@ const EducationSection = ({ profileData, setProfileData }) => {
   // =====================================
   // Handle Input
   // =====================================
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -28,11 +28,9 @@ const EducationSection = ({ profileData, setProfileData }) => {
   // =====================================
   // Add / Update Education
   // =====================================
-
   const handleAddEducation = (e) => {
     e.preventDefault();
 
-    // Check required fields
     if (
       !educationForm.degree.trim() ||
       !educationForm.institution.trim()
@@ -41,28 +39,32 @@ const EducationSection = ({ profileData, setProfileData }) => {
       return;
     }
 
-    if (editIndex !== null) {
-      // Update existing education
-      setProfileData((prev) => ({
-        ...prev,
-        education: prev.education.map((item, index) =>
-          index === editIndex
-            ? educationForm
-            : item
-        ),
-      }));
+    setProfileData((prev) => {
+      const currentEducation = Array.isArray(prev.education)
+        ? prev.education
+        : [];
 
-      setEditIndex(null);
-    } else {
+      // Update existing education
+      if (editIndex !== null) {
+        return {
+          ...prev,
+          education: currentEducation.map((item, index) =>
+            index === editIndex
+              ? { ...educationForm }
+              : item
+          ),
+        };
+      }
+
       // Add new education
-      setProfileData((prev) => ({
+      return {
         ...prev,
         education: [
-          ...(prev.education || []),
-          educationForm,
+          ...currentEducation,
+          { ...educationForm },
         ],
-      }));
-    }
+      };
+    });
 
     // Clear form
     setEducationForm({
@@ -73,14 +75,27 @@ const EducationSection = ({ profileData, setProfileData }) => {
       endYear: "",
       description: "",
     });
+
+    setEditIndex(null);
   };
 
   // =====================================
   // Edit Education
   // =====================================
-
   const handleEdit = (index) => {
-    setEducationForm(profileData.education[index]);
+    const education = profileData?.education?.[index];
+
+    if (!education) return;
+
+    setEducationForm({
+      degree: education.degree || "",
+      institution: education.institution || "",
+      field: education.field || "",
+      startYear: education.startYear || "",
+      endYear: education.endYear || "",
+      description: education.description || "",
+    });
+
     setEditIndex(index);
 
     window.scrollTo({
@@ -92,7 +107,6 @@ const EducationSection = ({ profileData, setProfileData }) => {
   // =====================================
   // Delete Education
   // =====================================
-
   const handleDelete = (index) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this education?"
@@ -102,34 +116,38 @@ const EducationSection = ({ profileData, setProfileData }) => {
 
     setProfileData((prev) => ({
       ...prev,
-      education: prev.education.filter(
-        (_, i) => i !== index
-      ),
+      education: Array.isArray(prev.education)
+        ? prev.education.filter((_, i) => i !== index)
+        : [],
     }));
+
+    // If deleting the item currently being edited
+    if (editIndex === index) {
+      setEducationForm({
+        degree: "",
+        institution: "",
+        field: "",
+        startYear: "",
+        endYear: "",
+        description: "",
+      });
+
+      setEditIndex(null);
+    }
   };
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-md">
-
-      {/* =====================================
-          Title
-      ===================================== */}
-
       <h2 className="text-xl font-bold mb-6">
         Education
       </h2>
 
-      {/* =====================================
-          Education Form
-      ===================================== */}
-
+      {/* Education Form */}
       <form
         onSubmit={handleAddEducation}
         className="space-y-4"
       >
-
         {/* Degree */}
-
         <div>
           <label className="block font-semibold mb-1">
             Degree
@@ -146,7 +164,6 @@ const EducationSection = ({ profileData, setProfileData }) => {
         </div>
 
         {/* Institution */}
-
         <div>
           <label className="block font-semibold mb-1">
             Institution
@@ -163,7 +180,6 @@ const EducationSection = ({ profileData, setProfileData }) => {
         </div>
 
         {/* Field */}
-
         <div>
           <label className="block font-semibold mb-1">
             Field of Study
@@ -180,9 +196,7 @@ const EducationSection = ({ profileData, setProfileData }) => {
         </div>
 
         {/* Years */}
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
           <div>
             <label className="block font-semibold mb-1">
               Start Year
@@ -212,11 +226,9 @@ const EducationSection = ({ profileData, setProfileData }) => {
               className="input input-bordered w-full"
             />
           </div>
-
         </div>
 
         {/* Description */}
-
         <div>
           <label className="block font-semibold mb-1">
             Description
@@ -232,8 +244,7 @@ const EducationSection = ({ profileData, setProfileData }) => {
           />
         </div>
 
-        {/* Add Button */}
-
+        {/* Add / Update */}
         <button
           type="submit"
           className="btn btn-primary"
@@ -242,102 +253,85 @@ const EducationSection = ({ profileData, setProfileData }) => {
             ? "Update Education"
             : "Add Education"}
         </button>
-
       </form>
 
-      {/* =====================================
-          Added Education List
-      ===================================== */}
+      {/* Education List */}
+      {Array.isArray(profileData?.education) &&
+        profileData.education.length > 0 && (
+          <div className="mt-8">
+            <h3 className="text-lg font-bold mb-4">
+              Added Education
+            </h3>
 
-      {profileData?.education?.length > 0 && (
-        <div className="mt-8">
+            <div className="space-y-4">
+              {profileData.education.map(
+                (education, index) => (
+                  <div
+                    key={index}
+                    className="border rounded-xl p-5 bg-gray-50"
+                  >
+                    <div className="flex justify-between items-start gap-4">
+                      <div>
+                        <h4 className="text-lg font-bold text-gray-800">
+                          {education.degree}
+                        </h4>
 
-          <h3 className="text-lg font-bold mb-4">
-            Added Education
-          </h3>
-
-          <div className="space-y-4">
-
-            {profileData.education.map(
-              (education, index) => (
-                <div
-                  key={index}
-                  className="border rounded-xl p-5 bg-gray-50"
-                >
-
-                  <div className="flex justify-between items-start gap-4">
-
-                    <div>
-
-                      <h4 className="text-lg font-bold text-gray-800">
-                        {education.degree}
-                      </h4>
-
-                      <p className="font-semibold text-gray-700 mt-1">
-                        {education.institution}
-                      </p>
-
-                      {education.field && (
-                        <p className="text-gray-600">
-                          {education.field}
+                        <p className="font-semibold text-gray-700 mt-1">
+                          {education.institution}
                         </p>
-                      )}
 
-                      {(education.startYear ||
-                        education.endYear) && (
-                        <p className="text-sm text-gray-500 mt-1">
-                          {education.startYear} -{" "}
-                          {education.endYear}
-                        </p>
-                      )}
+                        {education.field && (
+                          <p className="text-gray-600">
+                            {education.field}
+                          </p>
+                        )}
 
-                      {education.description && (
-                        <p className="text-gray-600 mt-3">
-                          {education.description}
-                        </p>
-                      )}
+                        {(education.startYear ||
+                          education.endYear) && (
+                          <p className="text-sm text-gray-500 mt-1">
+                            {education.startYear} -{" "}
+                            {education.endYear}
+                          </p>
+                        )}
 
+                        {education.description && (
+                          <p className="text-gray-600 mt-3">
+                            {education.description}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleEdit(index)
+                          }
+                          className="btn btn-sm btn-info"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleDelete(index)
+                          }
+                          className="btn btn-sm btn-error"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
-
-                    {/* Buttons */}
-
-                    <div className="flex gap-2">
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleEdit(index)
-                        }
-                        className="btn btn-sm btn-info"
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleDelete(index)
-                        }
-                        className="btn btn-sm btn-error"
-                      >
-                        Delete
-                      </button>
-
-                    </div>
-
                   </div>
-
-                </div>
-              )
-            )}
-
+                )
+              )}
+            </div>
           </div>
-
-        </div>
-      )}
-
+        )}
     </div>
   );
 };
 
 export default EducationSection;
+
